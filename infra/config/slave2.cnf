@@ -1,0 +1,7 @@
+[mysqld]
+server-id = 3
+relay_log = relay-bin
+read_only = 1
+log_slave_updates = 1
+skip-name-resolve = 1
+default_authentication_plugin = mysql_native_password

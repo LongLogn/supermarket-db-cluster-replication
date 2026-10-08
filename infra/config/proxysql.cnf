@@ -1,0 +1,47 @@
+datadir="/var/lib/proxysql"
+
+admin_variables =
+{
+    admin_credentials="admin:admin"
+    mysql_ifaces="0.0.0.0:6032"
+    refresh_interval=2000
+}
+
+mysql_variables =
+{
+    interfaces="0.0.0.0:6033"
+    default_schema="supermarket"
+    default_charset="utf8mb4"
+    stacksize=1048576
+    max_connections=5000
+    monitor_username="monitor"
+    monitor_password="monitor"
+    monitor_history=600000
+    connect_timeout_server=3000
+    monitor_connect_interval=2000
+    monitor_ping_interval=2000
+    ping_interval_server_msec=15000
+}
+
+mysql_servers =
+(
+    { address="mysql-master", port=3306, hostgroup=10, max_connections=200, comment="writer" },
+    { address="mysql-slave-1", port=3306, hostgroup=11, max_connections=200, comment="reader-1" },
+    { address="mysql-slave-2", port=3306, hostgroup=11, max_connections=200, comment="reader-2" }
+)
+
+mysql_users =
+(
+    { username="appuser", password="apppass", default_hostgroup=10, transaction_persistent=1, comment="application user" }
+)
+
+mysql_query_rules =
+(
+    { rule_id=1, active=1, match_digest="^(SELECT|SHOW|EXPLAIN)", destination_hostgroup=11, apply=1 },
+    { rule_id=2, active=1, match_pattern=".*", destination_hostgroup=10, apply=1 }
+)
+
+mysql_replication_hostgroups =
+(
+    { writer_hostgroup=10, reader_hostgroup=11, comment="writer-reader split" }
+)
